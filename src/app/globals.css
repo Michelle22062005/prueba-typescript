@@ -1,10 +1,12 @@
 @import "tailwindcss";
 
+/* Root colors define the default light theme tokens used by Tailwind variables. */
 :root {
   --background: #ffffff;
   --foreground: #171717;
 }
 
+/* Tailwind theme aliases map app tokens to CSS variables. */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -12,6 +14,7 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* Dark mode swaps the app background and foreground variables. */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
@@ -19,26 +22,24 @@
   }
 }
 
+/* Global body styles keep every page on the same base colors and font stack. */
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* 
-@layer utilities {
-  .kinetic-border {
-    @apply border border-[#ffbf00] shadow-[0_0_15px_rgba(255,191,0,0.15)];
-  } */
-
+/* Kinetic gradient is reused by dark dashboard surfaces. */
 .kinetic-gradient {
   background: linear-gradient(135deg, rgba(27, 27, 27, 1) 0%, rgba(35, 35, 35, 1) 100%);
 }
 
+/* Glow accent adds a subtle amber highlight for operational UI elements. */
 .glow-accent {
   box-shadow: 0 0 20px rgba(255, 191, 0, 0.1);
 }
 
+/* pulse-subtle supports low-noise loading or live-status indicators. */
 @keyframes pulse-subtle {
 
   0%,
@@ -51,11 +52,12 @@ body {
   }
 }
 
+/* Utility class for the custom pulse animation. */
 .animate-pulse-subtle {
   animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Custom Scrollbar Styles */
+/* Custom scrollbar styles keep scrollable dashboard areas on brand. */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -75,7 +77,7 @@ body {
   background: #ffbf00;
 }
 
-/* Firefox support */
+/* Firefox support for the custom scrollbar color and thickness. */
 * {
   scrollbar-width: thin;
   scrollbar-color: #353535 #131313;

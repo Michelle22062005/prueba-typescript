@@ -3,8 +3,14 @@ import { useEffect, useState } from 'react';
 import ShipmentModal from '@/components/shipments/shipmentsModal';
 import { useRouter } from 'next/navigation';
 
+/**
+ * Company renders the company-facing shipment dashboard.
+ * It loads shipments for the authenticated company account, opens the shipment
+ * creation modal, and provides a logout action for the current session.
+ */
 type ShipmentStatus = 'PENDING' | 'ASSIGNED' | 'IN_TRANSIT' | 'DELIVERED' | 'CANCELLED';
 
+// Shipment describes the compact shipment shape used by the company dashboard.
 type Shipment = {
     id: number;
     cargoType: string;
@@ -18,6 +24,7 @@ type Shipment = {
     createdAt: string;
 };
 
+// Formats API date strings into short, readable dates for dashboard cards.
 function formatDate(date: string): string {
     return new Date(date).toLocaleDateString('en-US', {
         year: 'numeric',
@@ -26,6 +33,7 @@ function formatDate(date: string): string {
     });
 }
 
+// StatusBadge centralizes the visual treatment for each shipment state.
 function StatusBadge({ status }: { status: ShipmentStatus }) {
     const styles: Record<ShipmentStatus, string> = {
         PENDING: 'text-amber-400',
@@ -42,7 +50,10 @@ function StatusBadge({ status }: { status: ShipmentStatus }) {
 }
 
 export default function Company() {
+    // Router is used after logout to return the user to the login page.
     const router = useRouter();
+
+    // State values drive the shipment list, loading indicator, and create modal.
     const [shipments, setShipments] = useState<Shipment[]>([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -51,13 +62,14 @@ export default function Company() {
         try {
             await fetch('/api/auth/logout', { method: 'POST' });
         } catch (e) {
-            console.error('Error cerrando sesión', e);
+            console.error('Error closing session', e);
         } finally {
             localStorage.clear();
             router.push('/login');
         }
     }
 
+    // Loads shipments using the access token stored by the login flow.
     async function fetchShipments() {
         try {
             setLoading(true);
@@ -75,6 +87,7 @@ export default function Company() {
         }
     }
 
+    // Load the company shipment list once the component mounts.
     useEffect(() => {
         fetchShipments();
     }, []);
@@ -110,7 +123,7 @@ export default function Company() {
                 </div>
                 <div className='px-8 py-2 space-y-2'>
                     <button onClick={handleLogout} className="w-full bg-red-500 text-white py-3 rounded-xl font-bold uppercase tracking-[0.05em] text-[10px] hover:bg-red-600 transition-all">
-                        Cerrar Sesión
+                        Log Out
                     </button>
                 </div>
             </aside>
@@ -334,7 +347,7 @@ export default function Company() {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-outline-variant/5">
-                                        {/* Cargando */}
+                                        {/* Loading */}
                                         {loading && (
                                             <tr>
                                                 <td colSpan={5} className="px-8 py-16 text-center text-outline/40">
@@ -346,7 +359,7 @@ export default function Company() {
                                             </tr>
                                         )}
 
-                                        {/* Vacío */}
+                                        {/* Empty state */}
                                         {!loading && shipments.length === 0 && (
                                             <tr>
                                                 <td colSpan={5} className="px-8 py-16 text-center text-outline/40">
@@ -364,7 +377,7 @@ export default function Company() {
                                             </tr>
                                         )}
 
-                                        {/* Filas reales */}
+                                        {/* Real rows */}
                                         {!loading && shipments.map((shipment) => (
                                             <tr key={shipment.id} className="hover:bg-[#353535]/30 transition-all cursor-pointer group">
                                                 <td className="px-8 py-6 text-sm font-bold text-on-surface opacity-60 group-hover:opacity-100 transition-opacity">

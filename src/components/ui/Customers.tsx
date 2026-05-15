@@ -3,8 +3,14 @@ import { useEffect, useState } from 'react';
 import ShipmentModal from '@/components/shipments/shipmentsModal';
 import { useRouter } from 'next/navigation';
 
+/**
+ * Customers renders the customer shipment portal.
+ * It lets customers review their shipment history, create new shipments,
+ * and leave the session through the shared logout endpoint.
+ */
 type ShipmentStatus = 'PENDING' | 'ASSIGNED' | 'IN_TRANSIT' | 'DELIVERED' | 'CANCELLED';
 
+// Shipment contains the fields required by the customer dashboard cards.
 type Shipment = {
     id: number;
     cargoType: string;
@@ -17,6 +23,7 @@ type Shipment = {
     createdAt: string;
 };
 
+// Formats persisted shipment dates for display in the customer timeline.
 function formatDate(date: string): string {
     return new Date(date).toLocaleDateString('en-US', {
         year: 'numeric',
@@ -25,6 +32,7 @@ function formatDate(date: string): string {
     });
 }
 
+// StatusBadge maps a shipment status to the color language used in the UI.
 function StatusBadge({ status }: { status: ShipmentStatus }) {
     const styles: Record<ShipmentStatus, string> = {
         PENDING: 'text-amber-400',
@@ -41,7 +49,10 @@ function StatusBadge({ status }: { status: ShipmentStatus }) {
 }
 
 export default function Customers() {
+    // Router handles the post-logout redirect.
     const router = useRouter();
+
+    // Local state keeps the list, loading state, modal visibility, and display name.
     const [shipments, setShipments] = useState<Shipment[]>([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -51,13 +62,14 @@ export default function Customers() {
         try {
             await fetch('/api/auth/logout', { method: 'POST' });
         } catch (e) {
-            console.error('Error cerrando sesión', e);
+            console.error('Error closing session', e);
         } finally {
             localStorage.clear();
             router.push('/login');
         }
     }
 
+    // Fetches only the shipments available to the current authenticated customer.
     async function fetchShipments() {
         try {
             setLoading(true);
@@ -75,6 +87,7 @@ export default function Customers() {
         }
     }
 
+    // Load shipments on first render.
     useEffect(() => {
         fetchShipments();
     }, []);
@@ -120,7 +133,7 @@ export default function Customers() {
                 </div>
                 <div className='px-8 py-2 space-y-2'>
                     <button onClick={handleLogout} className="w-full bg-red-500 text-white py-3 rounded-xl font-bold uppercase tracking-[0.05em] text-[10px] hover:bg-red-600 transition-all">
-                        Cerrar Sesión
+                        Log Out
                     </button>
                 </div>
             </aside>
@@ -383,7 +396,7 @@ export default function Customers() {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-outline-variant/5">
-                                        {/* Cargando */}
+                                        {/* Loading */}
                                         {loading && (
                                             <tr>
                                                 <td colSpan={5} className="px-8 py-16 text-center text-outline/40">
@@ -395,7 +408,7 @@ export default function Customers() {
                                             </tr>
                                         )}
 
-                                        {/* Vacío */}
+                                        {/* Empty state */}
                                         {!loading && shipments.length === 0 && (
                                             <tr>
                                                 <td colSpan={5} className="px-8 py-16 text-center text-outline/40">
@@ -413,7 +426,7 @@ export default function Customers() {
                                             </tr>
                                         )}
 
-                                        {/* Filas reales */}
+                                        {/* Real rows */}
                                         {!loading && shipments.map((shipment) => (
                                             <tr key={shipment.id} className="hover:bg-[#353535]/30 transition-all cursor-pointer group">
                                                 <td className="px-8 py-6 text-sm font-bold text-on-surface opacity-60 group-hover:opacity-100 transition-opacity">

@@ -1,12 +1,15 @@
+// Prisma generates the client used by the app from this schema.
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
 }
 
+// PostgreSQL is the application database provider.
 datasource db {
   provider = "postgresql"
 }
 
+// Role controls dashboard access and API permissions.
 enum Role {
   ADMIN
   COMPANY
@@ -14,6 +17,7 @@ enum Role {
   CUSTOMER
 }
 
+// ShipmentStatus tracks the business workflow from request to delivery.
 enum ShipmentStatus {
   PENDING
   PENDING_SUPERADMIN_REVIEW
@@ -26,18 +30,21 @@ enum ShipmentStatus {
   REJECTED
 }
 
+// ApprovalStatus supports driver application review decisions.
 enum ApprovalStatus {
   PENDING
   APPROVED
   REJECTED
 }
 
+// PaymentStatus tracks whether approved shipment prices have been paid.
 enum PaymentStatus {
   PENDING
   PAID
   FAILED
 }
 
+// User stores every authenticated account in the platform.
 model User {
   id                     Int                 @id @default(autoincrement())
   name                   String
@@ -63,6 +70,7 @@ model User {
   reviewedApplications   DriverApplication[] @relation("ReviewedDriverApplications")
 }
 
+// Shipment stores cargo requests, assignment data, pricing, and delivery state.
 model Shipment {
   id                Int            @id @default(autoincrement())
   cargoType         String
@@ -94,20 +102,22 @@ model Shipment {
   updatedAt         DateTime       @updatedAt
 }
 
+// Agent stores flexible AI or automation configuration owned by a user id.
 model Agent {
   id          Int      @id @default(autoincrement())
   name        String
   description String?
   type        String?
-  config      Json? // Para guardar configuraciones flexibles
+  config      Json? // Stores flexible agent configuration.
   isPublic    Boolean  @default(true)
   userId      Int
   createdAt   DateTime @default(now())
 
-  // Opcional: Relación con el usuario
+  // Optional future relation with the user.
   // user     User     @relation(fields: [userId], references: [id])
 }
 
+// Company groups users and shipments under a business identity.
 model Company {
   id           Int        @id @default(autoincrement())
   name         String
@@ -125,6 +135,7 @@ model Company {
   shipments    Shipment[]
 }
 
+// DriverApplication tracks driver approval requests and admin review metadata.
 model DriverApplication {
   id           Int            @id @default(autoincrement())
   userId       Int

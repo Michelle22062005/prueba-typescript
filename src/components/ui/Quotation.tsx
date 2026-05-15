@@ -6,8 +6,14 @@ import { useState, useEffect } from "react";
 import { Header } from "./Header";
 import Swal from 'sweetalert2';
 
+/**
+ * Quotation renders the admin review queue for proposed shipment prices.
+ * It loads shipments that need super-admin approval, lets the admin approve
+ * or reject them, and keeps the side navigation populated with user data.
+ */
 type ShipmentStatus = 'PENDING' | 'PENDING_SUPERADMIN_REVIEW' | 'PENDING_FOR_PAY' | 'AVAILABLE_FOR_ASSIGNMENT' | 'ASSIGNED' | 'IN_TRANSIT' | 'DELIVERED' | 'CANCELLED' | 'REJECTED';
 
+// Shipment captures the quotation fields required for review decisions.
 type Shipment = {
     id: number;
     cargoType: string;
@@ -22,7 +28,10 @@ type Shipment = {
 };
 
 export default function Quotation() {
+    // Router supports logout redirection from the quotation workspace.
     const router = useRouter()
+
+    // State separates identity, users, review queue data, and processing feedback.
     const [userName, setUserName] = useState<string>('ADMIN')
     const [users, setUsers] = useState<User[]>([])
     const [shipments, setShipments] = useState<Shipment[]>([])
@@ -30,11 +39,12 @@ export default function Quotation() {
     const [selectedShipmentId, setSelectedShipmentId] = useState<number | null>(null)
     const [processing, setProcessing] = useState(false)
 
+    // Loads only shipments that have a proposed price and still need admin review.
     const fetchShipments = async () => {
         try {
             setLoading(true)
             const token = localStorage.getItem('accessToken');
-            const storedUser = JSON.parse(localStorage.getItem('usuario-logueado') || '{}');
+            const storedUser = JSON.parse(localStorage.getItem('logged-in-user') || '{}');
             const headers = {
                 'Authorization': `Bearer ${token}`,
                 'x-user-id': storedUser.id?.toString() || '',
@@ -57,6 +67,7 @@ export default function Quotation() {
         }
     }
 
+    // Loads users so the shared aside can render reports and profile context.
     const fetchUsers = async () => {
         try {
             const res = await fetch('/api/users')
@@ -73,15 +84,16 @@ export default function Quotation() {
         try {
             await fetch('/api/auth/logout', { method: 'POST' })
         } catch (e) {
-            console.error('Error cerrando sesión', e)
+            console.error('Error closing session', e)
         } finally {
             localStorage.clear()
             router.push('/login')
         }
     }
 
+    // Restore the stored user name and hydrate the page data on mount.
     useEffect(() => {
-        const storedUser = localStorage.getItem('usuario-logueado')
+        const storedUser = localStorage.getItem('logged-in-user')
         if (storedUser) {
             try {
                 const { name } = JSON.parse(storedUser)
@@ -105,7 +117,7 @@ export default function Quotation() {
         try {
             setProcessing(true);
             const token = localStorage.getItem('accessToken');
-            const storedUser = JSON.parse(localStorage.getItem('usuario-logueado') || '{}');
+            const storedUser = JSON.parse(localStorage.getItem('logged-in-user') || '{}');
             const res = await fetch(`/api/shipments/${selectedShipmentId}`, {
                 method: 'PATCH',
                 headers: {
@@ -156,7 +168,7 @@ export default function Quotation() {
             try {
                 setProcessing(true);
                 const token = localStorage.getItem('accessToken');
-                const storedUser = JSON.parse(localStorage.getItem('usuario-logueado') || '{}');
+                const storedUser = JSON.parse(localStorage.getItem('logged-in-user') || '{}');
                 const res = await fetch(`/api/shipments/${selectedShipmentId}`, {
                     method: 'PATCH',
                     headers: {

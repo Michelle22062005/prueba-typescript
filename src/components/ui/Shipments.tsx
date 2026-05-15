@@ -7,6 +7,11 @@ import { Header } from '@/components/ui/Header';
 import Swal from 'sweetalert2';
 import { Shipment, ShipmentStatus } from '@/types/shipment';
 
+/**
+ * DriverCommandCenter is the operations workspace for shipment assignment.
+ * It loads shipments and users together, filters shipments by status,
+ * lets admins assign drivers or reject shipments, and shares navigation state.
+ */
 type Driver = {
     id: number;
     name: string;
@@ -15,13 +20,17 @@ type Driver = {
     isActive: boolean;
 };
 
+// Builds initials for driver avatars and compact identity chips.
 function getInitials(name: string): string {
     if (!name) return '?';
     return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
 }
 
 export default function DriverCommandCenter() {
+    // Router handles navigation after logout.
     const router = useRouter();
+
+    // State tracks the shipment list, available drivers, selection, and filters.
     const [shipments, setShipments] = useState<Shipment[]>([]);
     const [drivers, setDrivers] = useState<Driver[]>([]);
     const [loading, setLoading] = useState(true);
@@ -33,6 +42,7 @@ export default function DriverCommandCenter() {
     const [users, setUsers] = useState<User[]>([]);
     const [statusFilter, setStatusFilter] = useState<string>('ALL');
 
+    // Status filters define the tabs and counters shown above the shipment list.
     const ALL_STATUSES = [
         { key: 'ALL', label: 'All' },
         { key: 'PENDING_SUPERADMIN_REVIEW', label: 'Review' },
@@ -50,19 +60,19 @@ export default function DriverCommandCenter() {
         try {
             await fetch('/api/auth/logout', { method: 'POST' });
         } catch (e) {
-            console.error('Error cerrando sesión', e);
+            console.error('Error closing session', e);
         } finally {
             localStorage.clear();
             router.push('/login');
         }
     }
 
-
+    // Loads shipments and users in parallel so driver assignment has both datasets.
     async function fetchData() {
         try {
             setLoading(true);
             const token = localStorage.getItem('accessToken');
-            const storedUser = JSON.parse(localStorage.getItem('usuario-logueado') || '{}');
+            const storedUser = JSON.parse(localStorage.getItem('logged-in-user') || '{}');
 
             const headers = { 'Authorization': `Bearer ${token}`, 'x-user-id': storedUser.id?.toString() || '', 'x-user-role': storedUser.role || '' };
 
@@ -76,13 +86,13 @@ export default function DriverCommandCenter() {
 
             if (Array.isArray(shipmentsData)) {
                 if (storedUser.role === 'ADMIN') {
-                    // Admin ve todo para poder gestionar y asignar
+                    // Admins see every shipment so they can manage and assign work.
                     setShipments(shipmentsData);
                 } else if (storedUser.role === 'COMPANY') {
-                    // La empresa debe ver todos sus envíos en cualquier estado
+                    // Companies keep visibility over all their shipments in every status.
                     setShipments(shipmentsData);
                 } else {
-                    // Otros (Drivers) solo ven lo disponible para asignar
+                    // Other roles only see shipments that are available for assignment.
                     setShipments(shipmentsData.filter((s: Shipment) => s.status === 'AVAILABLE_FOR_ASSIGNMENT'));
                 }
             } else {
@@ -94,7 +104,7 @@ export default function DriverCommandCenter() {
                 setUsers(usersData);
             }
         } catch {
-            console.error('Error al cargar datos');
+            console.error('Error loading data');
         } finally {
             setLoading(false);
         }
@@ -102,7 +112,7 @@ export default function DriverCommandCenter() {
 
     useEffect(() => {
         fetchData();
-        const storedUser = localStorage.getItem('usuario-logueado');
+        const storedUser = localStorage.getItem('logged-in-user');
         if (storedUser) {
             try {
                 const parsedUser = JSON.parse(storedUser);
@@ -124,7 +134,7 @@ export default function DriverCommandCenter() {
 
         setAssigning(true);
         try {
-            const storedUser = JSON.parse(localStorage.getItem('usuario-logueado') || '{}');
+            const storedUser = JSON.parse(localStorage.getItem('logged-in-user') || '{}');
             const token = localStorage.getItem('accessToken');
             const res = await fetch(`/api/shipments/${selectedShipment.id}`, {
                 method: 'PATCH',
@@ -140,7 +150,7 @@ export default function DriverCommandCenter() {
             setSelectedShipment(null);
             fetchData();
         } catch {
-            console.error('Error al asignar driver');
+            console.error('Error assigning driver');
         } finally {
             setAssigning(false);
         }
@@ -166,7 +176,7 @@ export default function DriverCommandCenter() {
         if (reason) {
             setAssigning(true);
             try {
-                const storedUser = JSON.parse(localStorage.getItem('usuario-logueado') || '{}');
+                const storedUser = JSON.parse(localStorage.getItem('logged-in-user') || '{}');
                 const token = localStorage.getItem('accessToken');
                 const res = await fetch(`/api/shipments/${selectedShipment.id}`, {
                     method: 'PATCH',
@@ -183,7 +193,7 @@ export default function DriverCommandCenter() {
                 fetchData();
                 Swal.fire('Rejected', 'Shipment has been rejected', 'info');
             } catch {
-                console.error('Error al rechazar envío');
+                console.error('Error rejecting shipment');
                 Swal.fire('Error', 'Could not reject shipment', 'error');
             } finally {
                 setAssigning(false);
@@ -265,7 +275,7 @@ export default function DriverCommandCenter() {
                         {/* Shipments Grid */}
                         <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 overflow-y-auto pb-24 md:pb-6" style={{ scrollbarWidth: 'none' }}>
 
-                            {/* Cargando */}
+                            {/* Loading */}
                             {loading && (
                                 <div className="xl:col-span-2 flex items-center justify-center py-12 text-[#e2e2e2]/40">
                                     <span className="material-symbols-outlined animate-spin mr-2">progress_activity</span>
@@ -273,7 +283,7 @@ export default function DriverCommandCenter() {
                                 </div>
                             )}
 
-                            {/* Vacío */}
+                            {/* Empty state */}
                             {!loading && filteredShipments.length === 0 && (
                                 <div className="xl:col-span-2 flex flex-col items-center justify-center py-12 text-[#e2e2e2]/40">
                                     <span className="material-symbols-outlined text-4xl mb-2">inventory_2</span>

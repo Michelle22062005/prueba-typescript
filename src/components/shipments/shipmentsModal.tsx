@@ -1,12 +1,18 @@
 'use client';
 import { useState } from 'react';
 
+/**
+ * ShipmentModal collects shipment details from customers or companies.
+ * It validates the form, calculates a proposed price, shows a confirmation step,
+ * and then creates the shipment through the protected shipments API.
+ */
 type ShipmentModalProps = {
     isOpen: boolean;
     onClose: () => void;
     onSuccess: () => void;
 };
 
+// FormData mirrors the controlled inputs rendered inside the modal.
 type FormData = {
     cargoType: string;
     weight: string;
@@ -16,6 +22,7 @@ type FormData = {
     timeline: 'URGENT' | 'STANDARD';
 };
 
+// FormErrors stores field-level validation messages for the current form state.
 type FormErrors = {
     cargoType?: string;
     weight?: string;
@@ -23,6 +30,7 @@ type FormErrors = {
     destination?: string;
 };
 
+// Price stores the current quote values shown before creating the shipment.
 type Price = {
     unitRate: number;
     subtotal: number;
@@ -30,6 +38,7 @@ type Price = {
 };
 
 export default function ShipmentModal({ isOpen, onClose, onSuccess }: ShipmentModalProps) {
+    // Form state is kept as strings because values come directly from text inputs.
     const [formData, setFormData] = useState<FormData>({
         cargoType: '',
         weight: '',
@@ -48,6 +57,7 @@ export default function ShipmentModal({ isOpen, onClose, onSuccess }: ShipmentMo
         total: 0,
     });
 
+    // Calculates the visible quote using the configured unit rate and entered weight.
     function calcularPrecio() {
         const weight = Number(formData.weight) || 0;
         const unitRate = price.unitRate;
@@ -56,6 +66,7 @@ export default function ShipmentModal({ isOpen, onClose, onSuccess }: ShipmentMo
         setPrice({ ...price, subtotal: Number(subtotal.toFixed(2)), total: Number(total.toFixed(2)) });
     }
 
+    // Validates required fields before showing the price confirmation modal.
     function validate(): boolean {
         const newErrors: FormErrors = {};
         if (!formData.cargoType) newErrors.cargoType = 'Required';
@@ -67,6 +78,7 @@ export default function ShipmentModal({ isOpen, onClose, onSuccess }: ShipmentMo
         return Object.keys(newErrors).length === 0;
     }
 
+    // Resets transient state so the next open starts with a clean form.
     function handleClose() {
         setFormData({ cargoType: '', weight: '', dimensions: '', origin: '', destination: '', timeline: 'STANDARD' });
         setErrors({});
@@ -75,6 +87,7 @@ export default function ShipmentModal({ isOpen, onClose, onSuccess }: ShipmentMo
         onClose();
     }
 
+    // Starts the confirmation step after the form passes local validation.
     function handleSubmit() {
         if (!validate()) return;
         calcularPrecio();

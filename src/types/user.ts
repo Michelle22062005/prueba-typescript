@@ -1,5 +1,6 @@
 import { Role } from "@prisma/client";
 
+// User is the shared client-side representation used by admin and navigation UIs.
 export interface User {
     id: number;
     name: string;

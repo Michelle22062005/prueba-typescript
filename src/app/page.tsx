@@ -1,4 +1,9 @@
 import LoginForm from "@/components/ui/LoginForm";
+
+/**
+ * Home renders the public login experience at the site root.
+ * It pairs the login form with a logistics-themed visual panel on large screens.
+ */
 export default function Home() {
   return (
     <>
@@ -15,10 +20,10 @@ export default function Home() {
             <div className="absolute inset-0 bg-gradient-to-r from-surface via-transparent to-transparent"></div>
             <div className="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent opacity-60"></div>
           </div>
-          {/* <!-- Floating Telemetry Modules (Asymmetric Bento Style) --> */}
+          {/* Floating telemetry modules create the product mood on desktop. */}
           <div className="absolute inset-0 flex items-center justify-center p-12 z-10">
             <div className="grid grid-cols-6 grid-rows-6 gap-4 w-full h-full">
-              {/* <!-- Main Telemetry Hero --> */}
+              {/* Main telemetry hero */}
               <div className="col-start-2 col-end-5 row-start-2 row-end-4 glass-panel bg-[#303030] rounded-xl p-8 border border-white/5 flex flex-col justify-between">
                 <div className="flex justify-between items-start">
                   <span className="material-symbols-outlined text-primary-container text-4xl">dynamic_feed</span>
@@ -29,7 +34,7 @@ export default function Home() {
                   <div className="text-6xl font-black tracking-tighter text-white italic">84.2<span className="text-2xl not-italic ml-2 text-primary-container">Mph</span></div>
                 </div>
               </div>
-              {/* <!-- Secondary Metric --> */}
+              {/* Secondary metric */}
               <div className="col-start-5 col-end-7 row-start-3 row-end-5 glass-panel bg-[#303030] rounded-xl p-6 border border-white/5 self-end">
                 <div className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.1em] mb-4">Route Efficiency</div>
                 <div className="flex items-end gap-2">
@@ -40,17 +45,17 @@ export default function Home() {
                   <div className="ml-4 text-4xl font-black text-on-surface">98%</div>
                 </div>
               </div>
-              {/* <!-- Small Decorative Node --> */}
+              {/* Small decorative node */}
               <div className="col-start-2 col-end-3 row-start-4 row-end-5 glass-panel bg-[#303030] rounded-xl flex items-center justify-center border border-white/5">
                 <span className="material-symbols-outlined text-neutral-500" data-weight="fill">hub</span>
               </div>
-              {/* <!-- Visual Accent Line --> */}
+              {/* Visual accent line */}
               <div className="col-start-1 col-end-7 row-start-6 row-end-7 flex items-center px-12">
                 <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-primary-container/30 to-transparent"></div>
               </div>
             </div>
           </div>
-          {/* <!-- Bottom Left Brand Tag --> */}
+          {/* Bottom-left brand tag */}
           <div className="absolute bottom-12 left-12 z-20 flex items-center gap-4">
             <div className="w-12 h-12 bg-primary-container flex items-center justify-center rounded-xl rotate-45">
               <span className="material-symbols-outlined -rotate-45 text-on-primary font-bold">rocket_launch</span>

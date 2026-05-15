@@ -4,7 +4,13 @@ import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
 import Link from 'next/link';
 
+/**
+ * RegisterForm creates new user accounts for customers, companies, drivers,
+ * or admins. It validates phone data, sends the registration payload,
+ * and redirects successful users to the login page.
+ */
 export default function RegisterForm() {
+    // Controlled fields store the registration payload before it is submitted.
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
@@ -14,6 +20,7 @@ export default function RegisterForm() {
     const [nit, setNit] = useState('');
     const [adminCode, setAdminCode] = useState('')
     
+    // Countries provide the dialing code selector used to build the full phone number.
     const COUNTRIES = [
         { name: 'Colombia', code: '+57', iso: 'co' },
         { name: 'Venezuela', code: '+58', iso: 've' },
@@ -32,17 +39,18 @@ export default function RegisterForm() {
     
     const router = useRouter();
 
+    // Validates the form, sends it to the API, and handles success or error feedback.
     async function handleSubmit(e: React.FormEvent) {
 
         try {
             e.preventDefault();
             
-            // Validaciones de teléfono
+            // Phone validation keeps the backend payload predictable.
             if (!phone) {
-                throw new Error("El número de teléfono es obligatorio");
+                throw new Error("Phone number is required");
             }
             if (phone.length < 7 || phone.length > 15) {
-                throw new Error("El número de teléfono debe tener entre 7 y 15 dígitos");
+                throw new Error("Phone number must be between 7 and 15 digits");
             }
 
             const fullPhone = `${selectedCountry.code}${phone}`;
@@ -59,24 +67,24 @@ export default function RegisterForm() {
             }
 
             await Swal.fire({
-                title: '¡Registro Exitoso!',
-                text: 'Tu cuenta ha sido creada.',
+                title: 'Registration Successful!',
+                text: 'Your account has been created.',
                 icon: 'success',
                 timer: 2000,
                 showConfirmButton: false,
             });
 
-            localStorage.setItem("usuario-registrado", JSON.stringify({ email }));
+            localStorage.setItem("registered-user", JSON.stringify({ email }));
             router.push('/login');
 
         } catch (err: unknown) {
-            const errorMessage = err instanceof Error ? err.message : "Ocurrió un problema";
+            const errorMessage = err instanceof Error ? err.message : "Something went wrong";
 
             Swal.fire({
                 title: 'Error',
                 text: errorMessage,
                 icon: 'error',
-                confirmButtonText: 'Reintentar',
+                confirmButtonText: 'Try Again',
             });
         }
     }
@@ -96,17 +104,17 @@ export default function RegisterForm() {
                 />
             </div>
             <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-400 ml-1">Correo Electrónico</label>
+                <label className="text-sm font-medium text-gray-400 ml-1">Email Address</label>
                 <input
                     type="email"
-                    placeholder="ejemplo@correo.com"
+                    placeholder="example@email.com"
                     className="w-full bg-transparent border-b border-gray p-3 rounded-xl text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                 />
             </div>
             <div className="space-y-2 relative">
-                <label className="text-sm font-medium text-gray-400 ml-1">Telefono</label>
+                <label className="text-sm font-medium text-gray-400 ml-1">Phone</label>
                 <div className="flex items-center w-full bg-transparent border-b border-gray rounded-xl transition-all focus-within:ring-2 focus-within:ring-blue-500/50 focus-within:border-blue-500/50">
                     {/* Country Selector */}
                     <div className="relative">
@@ -166,7 +174,7 @@ export default function RegisterForm() {
                 )}
             </div>
             <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-400 ml-1">Dirección</label>
+                <label className="text-sm font-medium text-gray-400 ml-1">Address</label>
                 <input
                     type="text"
                     placeholder="direccion"
@@ -188,10 +196,10 @@ export default function RegisterForm() {
 
             {role === 'ADMIN' && (
                 <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
-                    <label className="text-sm font-medium text-amber-400 ml-1">Código de Administrador</label>
+                    <label className="text-sm font-medium text-amber-400 ml-1">Admin Code</label>
                     <input
                         type="text"
-                        placeholder="Ingrese el código secreto"
+                        placeholder="Enter the secret code"
                         className="w-full bg-transparent border-b border-gray p-3 rounded-xl text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
                         value={adminCode}
                         onChange={e => setAdminCode(e.target.value)}
@@ -201,7 +209,7 @@ export default function RegisterForm() {
             )}
             {role === 'COMPANY' && (
                 <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
-                    <label className="text-sm font-medium text-amber-400 ml-1">NIT de la empresa</label>
+                    <label className="text-sm font-medium text-amber-400 ml-1">Company NIT</label>
                     <input
                         type="text"
                         placeholder="nit"
@@ -214,7 +222,7 @@ export default function RegisterForm() {
 
 
             <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-400 ml-1">Contraseña</label>
+                <label className="text-sm font-medium text-gray-400 ml-1">Password</label>
                 <input
                     type="password"
                     placeholder="••••••••"
@@ -228,14 +236,14 @@ export default function RegisterForm() {
                 type="submit"
                 className="w-full py-5 rounded-xl text-[#402d00] mt-5 font-bold uppercase tracking-widest text-sm bg-[linear-gradient(135deg,_#ffe2ab_0%,_#ffbf00_100%)] shadow-[0_0_20px_rgba(255,191,0,0.3)] transition-all duration-300 active:scale-[0.98] flex items-center justify-center gap-2"
             >
-                Registrar Cuenta
+                Register Account
             </button>
 
             <div className="text-center mt-2">
                 <p className="text-sm text-gray-500">
-                    ¿Ya tienes cuenta?{" "}
+                    Already have an account?{" "}
                     <Link href="/login" className="text-[#fbbc00] hover:text-[#fff] font-medium transition-colors">
-                        Inicia sesión aquí
+                        Sign in here
                     </Link>
                 </p>
             </div>

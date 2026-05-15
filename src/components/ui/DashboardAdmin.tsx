@@ -11,14 +11,19 @@ import { Aside } from './Aside';
 import { Header } from './Header';
 import { Shipment, ShipmentStatus } from '@/types/shipment';
 
+/**
+ * MasterAdmin renders the administrative command center.
+ * It manages users, displays pending shipments, opens edit/confirmation modals,
+ * exports reports, and routes admins out through the logout endpoint.
+ */
 
-
-
+// Builds initials for compact avatar placeholders.
 function getInitials(name: string): string {
     if (!name) return '?';
     return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
 }
 
+// Formats database dates for the entity directory.
 function formatDate(date: string): string {
     return new Date(date).toLocaleDateString('es-CO', {
         year: 'numeric',
@@ -27,6 +32,7 @@ function formatDate(date: string): string {
     });
 }
 
+// RoleBadge gives each role a compact visual label in the user table.
 function RoleBadge({ role }: { role: Role }) {
     const styles: Record<Role, string> = {
         ADMIN: 'bg-zinc-800 text-zinc-400',
@@ -51,7 +57,10 @@ function RoleBadge({ role }: { role: Role }) {
 type TabType = 'ALL' | 'CUSTOMER' | 'COMPANY' | 'DRIVER' | 'PENDING_SHIPMENTS';
 
 export default function MasterAdmin() {
+    // Router is used for logout navigation.
     const router = useRouter();
+
+    // State covers users, filters, modals, confirmations, and shipment review data.
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -69,20 +78,19 @@ export default function MasterAdmin() {
         try {
             await fetch('/api/auth/logout', { method: 'POST' });
         } catch (e) {
-            console.error('Error cerrando sesión', e);
+            console.error('Error closing session', e);
         } finally {
             localStorage.clear();
             router.push('/login');
         }
     }
 
-
-
+    // Loads shipments so admins can review pending operational work.
     async function fetchShipments() {
         try {
             setShipmentsLoading(true);
             const token = localStorage.getItem('accessToken');
-            const storedUser = JSON.parse(localStorage.getItem('usuario-logueado') || '{}');
+            const storedUser = JSON.parse(localStorage.getItem('logged-in-user') || '{}');
             const res = await fetch('/api/shipments', {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -106,10 +114,10 @@ export default function MasterAdmin() {
             setLoading(true);
             const res = await fetch('/api/users');
             const data = await res.json();
-            if (!res.ok) throw new Error(data.error || 'No se pudieron cargar los usuarios');
+            if (!res.ok) throw new Error(data.error || 'Users could not be loaded');
             setUsers(data);
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : 'Users could not be loaded');
         } finally {
             setLoading(false);
         }
@@ -130,7 +138,7 @@ export default function MasterAdmin() {
             if (!res.ok) throw new Error();
             fetchUsers();
         } catch {
-            console.error('Error al cambiar estado');
+            console.error('Error changing status');
         } finally {
             setConfirmLoading(false);
             setConfirmOpen(false);
@@ -141,7 +149,7 @@ export default function MasterAdmin() {
     useEffect(() => {
         fetchUsers();
         fetchShipments();
-        const storedUser = localStorage.getItem('usuario-logueado');
+        const storedUser = localStorage.getItem('logged-in-user');
         if (storedUser) {
             const { name } = JSON.parse(storedUser);
             if (name) setUserName(name);
@@ -161,7 +169,7 @@ export default function MasterAdmin() {
 
             <Aside userName={userName} users={users} handleLogout={handleLogout} />
 
-            {/* Main — sin margin en mobile, con margin en lg+ */}
+            {/* Main layout removes the side margin on mobile and restores it on large screens. */}
             <main className="lg:ml-64 min-h-screen flex flex-col bg-[#0a0a0a]">
 
                 <Header />
@@ -190,7 +198,7 @@ export default function MasterAdmin() {
                         </div>
                     </div>
 
-                    {/* Tabs — scroll horizontal en mobile */}
+                    {/* Tabs use horizontal scrolling on mobile. */}
                     <div className="flex items-center gap-1 border-b border-zinc-800/30 overflow-x-auto scrollbar-none">
                         {([
                             { key: 'ALL', label: 'All Entities' },
@@ -211,7 +219,7 @@ export default function MasterAdmin() {
                         ))}
                     </div>
 
-                    {/* Tabla — scroll horizontal en mobile */}
+                    {/* Table uses horizontal scrolling on mobile. */}
                     <section className="bg-surface-container-low rounded-2xl overflow-hidden shadow-2xl border border-white/[0.02]">
                         <div className="overflow-x-auto">
                             {activeTab === 'PENDING_SHIPMENTS' ? (
