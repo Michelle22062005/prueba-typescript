@@ -1,9 +1,9 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Aside } from '@/components/ui/Aside';
+import { Aside } from '@/components/asides/Aside';
 import { User } from '@/types/user';
 import { useRouter } from 'next/navigation';
-import { Header } from '@/components/ui/Header';
+import { Header } from '@/components/Header/Header';
 import Swal from 'sweetalert2';
 import { Shipment, ShipmentStatus } from '@/types/shipment';
 
@@ -43,8 +43,6 @@ export default function DriverCommandCenter() {
         { key: 'DELIVERED', label: 'Delivered' },
         { key: 'REJECTED', label: 'Rejected' },
     ];
-
-
 
     async function handleLogout() {
         try {
@@ -220,7 +218,6 @@ export default function DriverCommandCenter() {
 
                 {/* Content */}
                 <div className="flex-1 flex flex-col md:flex-row gap-6 p-6 overflow-hidden">
-
                     {/* Left: Unassigned Shipments */}
                     <div className="flex-1 flex flex-col gap-6 min-w-0">
                         <div className="flex items-center justify-between">
@@ -244,18 +241,16 @@ export default function DriverCommandCenter() {
                                 <button
                                     key={status.key}
                                     onClick={() => setStatusFilter(status.key)}
-                                    className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest whitespace-nowrap transition-all border ${
-                                        statusFilter === status.key
-                                            ? 'bg-amber-400 text-black border-amber-400 shadow-[0_0_15px_rgba(255,191,0,0.3)]'
-                                            : 'bg-[#1b1b1b] text-zinc-500 border-zinc-800 hover:border-zinc-600'
-                                    }`}
+                                    className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest whitespace-nowrap transition-all border ${statusFilter === status.key
+                                        ? 'bg-amber-400 text-black border-amber-400 shadow-[0_0_15px_rgba(255,191,0,0.3)]'
+                                        : 'bg-[#1b1b1b] text-zinc-500 border-zinc-800 hover:border-zinc-600'
+                                        }`}
                                 >
                                     {status.label}
-                                    <span className={`ml-2 px-1.5 py-0.5 rounded-full text-[8px] ${
-                                        statusFilter === status.key ? 'bg-black/20 text-black' : 'bg-zinc-800 text-zinc-400'
-                                    }`}>
-                                        {status.key === 'ALL' 
-                                            ? shipments.length 
+                                    <span className={`ml-2 px-1.5 py-0.5 rounded-full text-[8px] ${statusFilter === status.key ? 'bg-black/20 text-black' : 'bg-zinc-800 text-zinc-400'
+                                        }`}>
+                                        {status.key === 'ALL'
+                                            ? shipments.length
                                             : shipments.filter(s => s.status === status.key).length}
                                     </span>
                                 </button>
@@ -264,12 +259,11 @@ export default function DriverCommandCenter() {
 
                         {/* Shipments Grid */}
                         <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 overflow-y-auto pb-24 md:pb-6" style={{ scrollbarWidth: 'none' }}>
-
                             {/* Cargando */}
                             {loading && (
-                                <div className="xl:col-span-2 flex items-center justify-center py-12 text-[#e2e2e2]/40">
-                                    <span className="material-symbols-outlined animate-spin mr-2">progress_activity</span>
-                                    Loading shipments...
+                                <div className="xl:col-span-2 flex flex-col items-center justify-center py-20 text-[#e2e2e2]/20">
+                                    <span className="material-symbols-outlined animate-spin text-4xl mb-4">progress_activity</span>
+                                    <p className="text-xs uppercase tracking-[0.3em] font-black">Syncing Fleet...</p>
                                 </div>
                             )}
 
@@ -313,14 +307,13 @@ export default function DriverCommandCenter() {
                                                     {shipment.timeline === 'URGENT' ? 'URGENT: 24H WINDOW' : 'STANDARD EXPEDITE'}
                                                 </p>
                                                 <div className="flex flex-wrap gap-2 mt-2">
-                                                    <span className={`inline-block px-2 py-0.5 rounded text-[8px] font-black tracking-widest uppercase border ${
-                                                        shipment.status === 'DELIVERED' ? 'border-green-500/50 text-green-400 bg-green-500/10' :
+                                                    <span className={`inline-block px-2 py-0.5 rounded text-[8px] font-black tracking-widest uppercase border ${shipment.status === 'DELIVERED' ? 'border-green-500/50 text-green-400 bg-green-500/10' :
                                                         shipment.status === 'IN_TRANSIT' ? 'border-blue-500/50 text-blue-400 bg-blue-500/10' :
-                                                        shipment.status === 'AVAILABLE_FOR_ASSIGNMENT' ? 'border-amber-500/50 text-amber-400 bg-amber-500/10' :
-                                                        shipment.status === 'REJECTED' || shipment.status === 'CANCELLED' ? 'border-red-500/50 text-red-400 bg-red-500/10' :
-                                                        shipment.status === 'PENDING_FOR_PAY' ? 'border-purple-500/50 text-purple-400 bg-purple-500/10' :
-                                                        'border-zinc-500/50 text-zinc-400 bg-zinc-500/10'
-                                                    }`}>
+                                                            shipment.status === 'AVAILABLE_FOR_ASSIGNMENT' ? 'border-amber-500/50 text-amber-400 bg-amber-500/10' :
+                                                                shipment.status === 'REJECTED' || shipment.status === 'CANCELLED' ? 'border-red-500/50 text-red-400 bg-red-500/10' :
+                                                                    shipment.status === 'PENDING_FOR_PAY' ? 'border-purple-500/50 text-purple-400 bg-purple-500/10' :
+                                                                        'border-zinc-500/50 text-zinc-400 bg-zinc-500/10'
+                                                        }`}>
                                                         {shipment.status.replace(/_/g, ' ')}
                                                     </span>
                                                     {shipment.paymentStatus === 'PAID' && (
@@ -430,7 +423,7 @@ export default function DriverCommandCenter() {
                                                 SHP-{String(selectedShipment.id).padStart(4, '0')} — {selectedShipment.origin} → {selectedShipment.destination}
                                             </p>
                                         </div>
-                                        <button 
+                                        <button
                                             onClick={handleReject}
                                             disabled={assigning}
                                             className="px-3 py-1.5 bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white rounded-lg text-[9px] font-black uppercase tracking-widest transition-all disabled:opacity-50"

@@ -69,6 +69,31 @@ export async function POST(req: Request) {
                 createdAt: true,
             },
         })
+        //si el rol es COMPANY, crear tambien el registro
+        if (newUser.role === "COMPANY") {
+            if (!nit) {
+                return NextResponse.json(
+                    { error: "EL NIT es obligatorio para la empresa" },
+                    { status: 400 }
+                )
+            }
+            const company = await prisma.company.create({
+                data: {
+                    name: newUser.name,       // viene de User
+                    nit: newUser.nit!,        // viene de User
+                    address: newUser.address, // viene de User
+                    managerId: newUser.id,    // el usuario es el manager de su empresa
+                    createdById: newUser.id,
+                },
+            });
+
+            // Vincular el usuario a su empresa recién creada
+            await prisma.user.update({
+                where: { id: newUser.id },
+                data: { companyId: company.id },
+            });
+
+        }
         return NextResponse.json(
             { message: "Usuario registrado exitosamente", user: newUser },
             { status: 201 }

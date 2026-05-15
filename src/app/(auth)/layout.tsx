@@ -39,22 +39,22 @@ export default function authLayout({
                         {/* <!-- Main Telemetry Hero --> */}
                         <div className="col-start-2 col-end-5 row-start-2 row-end-4 glass-panel bg-[#303030] rounded-xl p-8 border border-white/5 flex flex-col justify-between">
                             <div className="flex justify-between items-start">
-                                <span className="material-symbols-outlined text-primary-container text-4xl">dynamic_feed</span>
-                                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary-container bg-primary-container/10 px-3 py-1 rounded-full">Real-time Feed</span>
+                                <span className="material-symbols-outlined text-[#fbbc00] text-4xl">dynamic_feed</span>
+                                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#fbbc00] bg-[#fbbc00]/10 px-3 py-1 rounded-full">Real-time Feed</span>
                             </div>
                             <div>
                                 <div className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.1em] mb-1">Global Fleet Momentum</div>
-                                <div className="text-6xl font-black tracking-tighter text-white italic">84.2<span className="text-2xl not-italic ml-2 text-primary-container">Mph</span></div>
+                                <div className="text-6xl font-black tracking-tighter text-white italic">84.2<span className="text-2xl not-italic ml-2 text-[#fbbc00]">Mph</span></div>
                             </div>
                         </div>
                         {/* <!-- Secondary Metric --> */}
                         <div className="col-start-5 col-end-7 row-start-3 row-end-5 glass-panel bg-[#303030] rounded-xl p-6 border border-white/5 self-end">
                             <div className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.1em] mb-4">Route Efficiency</div>
                             <div className="flex items-end gap-2">
-                                <div className="h-16 w-2 bg-primary-container rounded-t-full"></div>
-                                <div className="h-24 w-2 bg-primary-container rounded-t-full"></div>
-                                <div className="h-12 w-2 bg-primary-container/20 rounded-t-full"></div>
-                                <div className="h-20 w-2 bg-primary-container rounded-t-full"></div>
+                                <div className="h-16 w-2 bg-[#fbbc00] rounded-t-full"></div>
+                                <div className="h-24 w-2 bg-[#fbbc00] rounded-t-full"></div>
+                                <div className="h-12 w-2 bg-[#fbbc00]/20 rounded-t-full"></div>
+                                <div className="h-20 w-2 bg-[#fbbc00] rounded-t-full"></div>
                                 <div className="ml-4 text-4xl font-black text-on-surface">98%</div>
                             </div>
                         </div>
@@ -70,8 +70,8 @@ export default function authLayout({
                 </div>
                 {/* <!-- Bottom Left Brand Tag --> */}
                 <div className="absolute bottom-12 left-12 z-20 flex items-center gap-4">
-                    <div className="w-12 h-12 bg-primary-container flex items-center justify-center rounded-xl rotate-45">
-                        <span className="material-symbols-outlined -rotate-45 text-on-primary font-bold">rocket_launch</span>
+                    <div className="w-12 h-12 bg-[#fbbc00] flex items-center justify-center rounded-xl rotate-45">
+                        <span className="material-symbols-outlined -rotate-45 text-[#402d00]">rocket_launch</span>
                     </div>
                     <div>
                         <div className="text-xs font-black tracking-widest text-on-surface uppercase">Kinetic Precision</div>

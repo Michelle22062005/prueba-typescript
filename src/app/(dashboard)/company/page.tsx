@@ -1,5 +1,5 @@
 'use client';
-import Company from '@/components/ui/Company';
+import Company from '@/components/company/Company';
 
 
 export default function CompanyPage() {

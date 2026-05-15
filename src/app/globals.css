@@ -55,28 +55,29 @@ body {
   animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Custom Scrollbar Styles */
+/* Premium Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #131313;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #353535;
+  background: #27272a;
   border-radius: 10px;
-  transition: background 0.3s;
+  transition: all 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #ffbf00;
+  box-shadow: 0 0 10px rgba(255, 191, 0, 0.3);
 }
 
-/* Firefox support */
+/* Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #353535 #131313;
+  scrollbar-color: #27272a transparent;
 }

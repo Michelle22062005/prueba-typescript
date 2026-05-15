@@ -1,9 +1,9 @@
 "use client"
-import { Aside } from "./Aside"
+import { Aside } from "../asides/Aside"
 import { useRouter } from "next/navigation"
 import { User } from '@/types/user';
 import { useState, useEffect } from "react";
-import { Header } from "./Header";
+import { Header } from "../Header/Header";
 import Swal from 'sweetalert2';
 
 type ShipmentStatus = 'PENDING' | 'PENDING_SUPERADMIN_REVIEW' | 'PENDING_FOR_PAY' | 'AVAILABLE_FOR_ASSIGNMENT' | 'ASSIGNED' | 'IN_TRANSIT' | 'DELIVERED' | 'CANCELLED' | 'REJECTED';
@@ -233,8 +233,8 @@ export default function Quotation() {
                             </div>
                         ) : (
                             shipments.map((shipment) => (
-                                <div 
-                                    key={shipment.id} 
+                                <div
+                                    key={shipment.id}
                                     onClick={() => setSelectedShipmentId(selectedShipmentId === shipment.id ? null : shipment.id)}
                                     className={`bg-[#1b1b1b] p-10 border-l-[3px] relative overflow-hidden group hover:bg-[#222222] transition-colors duration-500 cursor-pointer ${selectedShipmentId === shipment.id ? 'border-white bg-[#222222]' : 'border-[#ffbf00]'}`}
                                 >
@@ -280,14 +280,14 @@ export default function Quotation() {
                             </p>
                         </div>
                         <div className="flex gap-6">
-                            <button 
+                            <button
                                 onClick={handleReject}
                                 disabled={processing || !selectedShipmentId}
                                 className="px-12 py-6 bg-transparent text-[#e2e2e2]/40 font-black uppercase tracking-[0.3em] text-[10px] border border-white/10 hover:bg-red-500/10 hover:text-red-500 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                             >
                                 {processing ? '...' : 'Reject Quote'}
                             </button>
-                            <button 
+                            <button
                                 onClick={handleAccept}
                                 disabled={processing || !selectedShipmentId}
                                 className="px-16 py-6 bg-[#ffbf00] text-black font-black uppercase tracking-[0.4em] text-[10px] shadow-[0_0_30px_rgba(255,191,0,0.3)] hover:shadow-[0_0_50px_rgba(255,191,0,0.5)] hover:bg-white transition-all transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"

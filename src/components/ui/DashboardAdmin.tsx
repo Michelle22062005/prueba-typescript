@@ -5,10 +5,8 @@ import UserModal from '@/components/users/userModal';
 import ConfirmModal from '@/components/ui/ConfirmModal';
 import { User } from '@/types/user';
 import { Role } from '@/generated/prisma';
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
-import { Aside } from './Aside';
-import { Header } from './Header';
+import { Aside } from '../asides/Aside';
+import { Header } from '../Header/Header';
 import { Shipment, ShipmentStatus } from '@/types/shipment';
 
 
@@ -190,23 +188,29 @@ export default function MasterAdmin() {
                         </div>
                     </div>
 
-                    {/* Tabs — scroll horizontal en mobile */}
-                    <div className="flex items-center gap-1 border-b border-zinc-800/30 overflow-x-auto scrollbar-none">
+                    {/* Tabs — Chip Style */}
+                    <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-2">
                         {([
                             { key: 'ALL', label: 'All Entities' },
-                            { key: 'COMPANY', label: 'Company' },
+                            { key: 'COMPANY', label: 'Companies' },
                             { key: 'DRIVER', label: 'Partners' },
-                            { key: 'PENDING_SHIPMENTS', label: 'Pending Shipments' },
+                            { key: 'PENDING_SHIPMENTS', label: 'Pending' },
                         ] as { key: TabType; label: string }[]).map((tab) => (
                             <button
                                 key={tab.key}
                                 onClick={() => setActiveTab(tab.key)}
-                                className={`px-5 lg:px-8 py-4 text-xs font-bold uppercase tracking-widest transition-colors whitespace-nowrap ${activeTab === tab.key
-                                    ? 'text-amber-400 border-b-2 border-amber-400'
-                                    : 'text-zinc-500 hover:text-zinc-200'
+                                className={`px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border whitespace-nowrap ${activeTab === tab.key
+                                    ? 'bg-amber-400 text-black border-amber-400 shadow-[0_0_20px_rgba(255,191,0,0.25)]'
+                                    : 'bg-zinc-900/50 text-zinc-500 border-zinc-800 hover:border-zinc-700 hover:text-zinc-300'
                                     }`}
                             >
                                 {tab.label}
+                                <span className={`ml-3 px-1.5 py-0.5 rounded-md text-[8px] ${activeTab === tab.key ? 'bg-black/10 text-black' : 'bg-zinc-800 text-zinc-500'
+                                    }`}>
+                                    {tab.key === 'PENDING_SHIPMENTS'
+                                        ? shipments.filter(s => ['PENDING', 'PENDING_SUPERADMIN_REVIEW', 'PENDING_FOR_PAY', 'AVAILABLE_FOR_ASSIGNMENT'].includes(s.status)).length
+                                        : tab.key === 'ALL' ? users.filter(u => u.role !== 'ADMIN').length : users.filter(u => u.role === tab.key).length}
+                                </span>
                             </button>
                         ))}
                     </div>
@@ -253,11 +257,10 @@ export default function MasterAdmin() {
                                                     <div className="text-[10px] text-zinc-500">→ {s.destination}</div>
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <span className={`px-2 py-1 rounded text-[9px] font-bold uppercase tracking-wider ${
-                                                        s.status === 'PENDING_SUPERADMIN_REVIEW' ? 'bg-amber-900/20 text-amber-200 border border-amber-900/30' :
+                                                    <span className={`px-2 py-1 rounded text-[9px] font-bold uppercase tracking-wider ${s.status === 'PENDING_SUPERADMIN_REVIEW' ? 'bg-amber-900/20 text-amber-200 border border-amber-900/30' :
                                                         s.status === 'PENDING_FOR_PAY' ? 'bg-purple-900/20 text-purple-200 border border-purple-900/30' :
-                                                        'bg-zinc-800 text-zinc-400'
-                                                    }`}>
+                                                            'bg-zinc-800 text-zinc-400'
+                                                        }`}>
                                                         {s.status.replace(/_/g, ' ')}
                                                     </span>
                                                 </td>
@@ -366,7 +369,7 @@ export default function MasterAdmin() {
 
                         <div className="bg-surface-container-high px-6 py-4 flex items-center justify-between border-t border-zinc-800">
                             <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">
-                                {activeTab === 'PENDING_SHIPMENTS' 
+                                {activeTab === 'PENDING_SHIPMENTS'
                                     ? `Total Pending: ${shipments.filter(s => ['PENDING', 'PENDING_SUPERADMIN_REVIEW', 'PENDING_FOR_PAY', 'AVAILABLE_FOR_ASSIGNMENT'].includes(s.status)).length}`
                                     : (loading ? '...' : `Showing ${filteredUsers.length} of ${users.length} Entries`)}
                             </p>

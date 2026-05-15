@@ -1,7 +1,8 @@
 'use client';
 import { useEffect, useState } from 'react';
 import ShipmentModal from '@/components/shipments/shipmentsModal';
-import { useRouter } from 'next/navigation';
+import { AsideCompany } from '@/components/asides/AsideCompany';
+import { HeaderCompany } from '../Header/HeaderCompany';
 
 type ShipmentStatus = 'PENDING' | 'ASSIGNED' | 'IN_TRANSIT' | 'DELIVERED' | 'CANCELLED';
 
@@ -42,21 +43,11 @@ function StatusBadge({ status }: { status: ShipmentStatus }) {
 }
 
 export default function Company() {
-    const router = useRouter();
     const [shipments, setShipments] = useState<Shipment[]>([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    async function handleLogout() {
-        try {
-            await fetch('/api/auth/logout', { method: 'POST' });
-        } catch (e) {
-            console.error('Error cerrando sesión', e);
-        } finally {
-            localStorage.clear();
-            router.push('/login');
-        }
-    }
+
 
     async function fetchShipments() {
         try {
@@ -85,50 +76,10 @@ export default function Company() {
 
     return (
         <div className="overflow-x-hidden" style={{ backgroundColor: '#131313', color: '#e2e2e2', fontFamily: "'Inter', sans-serif" }}>
-
-            {/* Side Navigation */}
-            <aside className="h-screen w-72 fixed left-0 top-0 border-r border-[#504532]/15 bg-[#1b1b1b] flex flex-col py-8 z-50 shadow-[0_0_20px_rgba(255,191,0,0.05)]">
-                <div className="px-8 mb-10">
-                    <h1 className="text-3xl font-black italic text-[#ffbf00] tracking-tighter">TRUX</h1>
-                    <p className="font-['Inter'] text-[10px] tracking-[0.2em] uppercase opacity-50 mt-1">Precision Logistics</p>
-                </div>
-                <nav className="flex-1 space-y-1">
-                    <a className="bg-[#353535] text-[#ffbf00] border-r-4 border-[#ffbf00] flex items-center gap-4 px-8 py-4 transition-all" href="#">
-                        <span className="material-symbols-outlined">dashboard</span>
-                        <span className="font-['Inter'] text-sm tracking-[0.05em] uppercase font-bold">Dashboard</span>
-                    </a>
-
-                </nav>
-                <div className="px-6 mt-auto">
-                    <button
-                        onClick={() => setIsModalOpen(true)}
-                        className="w-full py-4 bg-[#ffbf00] text-black font-bold rounded-xl flex items-center justify-center gap-2 hover:shadow-[0_0_12px_rgba(255,191,0,0.3)] transition-all active:scale-95"
-                    >
-                        <span className="material-symbols-outlined">add</span>
-                        <span className="uppercase tracking-widest text-xs">New Request</span>
-                    </button>
-                </div>
-                <div className='px-8 py-2 space-y-2'>
-                    <button onClick={handleLogout} className="w-full bg-red-500 text-white py-3 rounded-xl font-bold uppercase tracking-[0.05em] text-[10px] hover:bg-red-600 transition-all">
-                        Cerrar Sesión
-                    </button>
-                </div>
-            </aside>
-
+            <AsideCompany />
             {/* Main Content */}
             <main className="ml-72 min-h-screen flex flex-col bg-[#131313]">
-                {/* Header */}
-                <header className="bg-[#131313] text-[#ffbf00] font-['Inter'] uppercase tracking-[0.05em] text-sm font-bold border-b border-[#504532]/15 flex justify-between items-center w-full px-8 h-16 sticky top-0 z-40">
-                    <div className="flex items-center gap-4">
-                        <span className="opacity-50">Portal</span>
-                        <span className="material-symbols-outlined text-[10px] opacity-30">arrow_forward_ios</span>
-                        <span className="text-on-surface">Company Overview</span>
-                    </div>
-                    <div className="flex items-center gap-6">
-                        <span className="material-symbols-outlined text-[#e2e2e2] opacity-70 hover:text-[#ffbf00] cursor-pointer transition-colors">notifications</span>
-                        <span className="material-symbols-outlined text-[#e2e2e2] opacity-70 hover:text-[#ffbf00] cursor-pointer transition-colors">settings</span>
-                    </div>
-                </header>
+                <HeaderCompany />
 
                 {/* Content Canvas */}
                 <div className="p-8 lg:p-12 space-y-12 flex-1">
