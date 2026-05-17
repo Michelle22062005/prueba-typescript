@@ -1,3 +1,5 @@
+-- Adds company registration fields to User and makes nit unique.
+
 /*
   Warnings:
 

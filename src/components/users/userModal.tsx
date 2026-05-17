@@ -3,12 +3,19 @@ import { useState, useEffect } from "react";
 import { User } from "@/types/user";
 import { Role } from "@/generated/prisma";
 
+/**
+ * UserModal creates and edits users from the admin dashboard.
+ * It reuses the same form for create and update flows, validates input locally,
+ * and notifies the parent when the API operation succeeds.
+ */
 type UserModalProps = {
     isOpen: boolean;
     onClose: () => void;
     onSuccess: () => void;
     user?: User | null;
 };
+
+// FormData mirrors the editable user fields shown in the modal.
 type FormData = {
     name: string;
     email: string;
@@ -20,6 +27,7 @@ type FormData = {
     isActive: boolean;
 };
 
+// FormErrors holds validation messages by field name.
 type FormErrors = {
     name?: string;
     email?: string;
@@ -30,8 +38,10 @@ type FormErrors = {
 };
 
 export default function UserModal({ isOpen, onClose, onSuccess, user }: UserModalProps) {
+    // The presence of a user switches the modal between create and edit mode.
     const isEditing = !!user;
 
+    // Form state is reset whenever the modal opens for a different user.
     const [formData, setFormData] = useState<FormData>({
         name: "",
         email: "",
@@ -47,6 +57,7 @@ export default function UserModal({ isOpen, onClose, onSuccess, user }: UserModa
     const [serverError, setServerError] = useState<string | null>(null);
     const [nit, setNit] = useState("");
 
+    // Hydrate form fields from the selected user or reset them for a new user.
     useEffect(() => {
         if (user) {
             setFormData({
@@ -73,22 +84,23 @@ export default function UserModal({ isOpen, onClose, onSuccess, user }: UserModa
         setServerError(null);
     }, [user, isOpen]);
 
+    // Validates required fields and basic email/password rules before submitting.
     function validate(): boolean {
         const newErrors: FormErrors = {};
 
-        if (!formData.name.trim()) newErrors.name = 'El nombre es requerido';
+        if (!formData.name.trim()) newErrors.name = 'Name is required';
 
         if (!formData.email.trim()) {
-            newErrors.email = 'El email es requerido';
+            newErrors.email = 'Email is required';
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            newErrors.email = 'El email no es válido';
+            newErrors.email = 'The email is not valid';
         }
 
         if (!isEditing) {
             if (!formData.password) {
-                newErrors.password = 'La contraseña es requerida';
+                newErrors.password = 'Password is required';
             } else if (formData.password.length < 8) {
-                newErrors.password = 'Mínimo 8 caracteres';
+                newErrors.password = 'Minimum 8 characters';
             }
         }
 
@@ -127,7 +139,7 @@ export default function UserModal({ isOpen, onClose, onSuccess, user }: UserModa
             const data = await res.json();
 
             if (!res.ok) {
-                setServerError(data.error || 'Error al guardar el usuario');
+                setServerError(data.error || 'Error saving user');
                 return;
             }
             onSuccess();
@@ -173,10 +185,10 @@ export default function UserModal({ isOpen, onClose, onSuccess, user }: UserModa
                     </div>
                 )}
 
-                {/* Formulario */}
+                {/* Form */}
                 <div className="space-y-4">
 
-                    {/* Nombre */}
+                    {/* Name */}
                     <div>
                         <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1">Name</label>
                         <input
@@ -203,7 +215,7 @@ export default function UserModal({ isOpen, onClose, onSuccess, user }: UserModa
                         />
                         {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email}</p>}
                     </div>
-                    {/* Telefono */}
+                    {/* Phone */}
                     <div>
                         <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1">Phone</label>
                         <input
@@ -216,7 +228,7 @@ export default function UserModal({ isOpen, onClose, onSuccess, user }: UserModa
                         />
                         {errors.phone && <p className="text-red-400 text-xs mt-1">{errors.phone}</p>}
                     </div>
-                    {/* Direccion */}
+                    {/* Address */}
                     <div>
                         <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1">Address</label>
                         <input
@@ -230,7 +242,7 @@ export default function UserModal({ isOpen, onClose, onSuccess, user }: UserModa
                         {errors.address && <p className="text-red-400 text-xs mt-1">{errors.address}</p>}
                     </div>
 
-                    {/* Contraseña - solo en modo crear */}
+                    {/* Password - create mode only */}
                     {!isEditing && (
                         <div>
                             <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1">Password</label>
@@ -246,7 +258,7 @@ export default function UserModal({ isOpen, onClose, onSuccess, user }: UserModa
                         </div>
                     )}
 
-                    {/* Rol */}
+                    {/* Role */}
                     <div>
                         <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1">Role</label>
                         <select
@@ -261,7 +273,7 @@ export default function UserModal({ isOpen, onClose, onSuccess, user }: UserModa
                         </select>
                         {formData.role === 'COMPANY' && (
                             <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
-                                <label className="text-sm font-medium text-amber-400 ml-1">NIT de la empresa</label>
+                                <label className="text-sm font-medium text-amber-400 ml-1">Company NIT</label>
                                 <input
                                     type="text"
                                     placeholder="nit"
@@ -274,7 +286,7 @@ export default function UserModal({ isOpen, onClose, onSuccess, user }: UserModa
 
                     </div>
 
-                    {/* Estado - solo en modo editar */}
+                    {/* Status - edit mode only */}
                     {isEditing && (
                         <div>
                             <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1">Status</label>

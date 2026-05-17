@@ -1,3 +1,5 @@
+-- Adds shipment tracking, relaxes agent optional fields, and makes user profile fields nullable.
+
 -- CreateEnum
 CREATE TYPE "ShipmentStatus" AS ENUM ('PENDING', 'ASSIGNED', 'IN_TRANSIT', 'DELIVERED', 'CANCELLED');
 

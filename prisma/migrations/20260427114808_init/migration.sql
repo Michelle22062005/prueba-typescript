@@ -1,3 +1,5 @@
+-- Initial migration: creates roles, users, agents, and the first agent-user link.
+
 -- CreateEnum
 CREATE TYPE "Role" AS ENUM ('ADMIN', 'COMPANY', 'DRIVER', 'CUSTOMER');
 

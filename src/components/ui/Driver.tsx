@@ -3,8 +3,14 @@ import { useEffect, useState } from 'react';
 import ActiveTripModal from '@/components/shipments/ActiveTripModal';
 import { useRouter } from 'next/navigation';
 
+/**
+ * Driver renders the driver-facing trip dashboard.
+ * It loads assigned shipments, highlights the active trip, shows completed work,
+ * and opens ActiveTripModal so drivers can update shipment progress.
+ */
 type ShipmentStatus = 'ASSIGNED' | 'IN_TRANSIT' | 'DELIVERED' | 'CANCELLED' | 'PENDING';
 
+// Shipment contains the driver-facing fields required for trip cards and modals.
 type Shipment = {
     id: number;
     cargoType: string;
@@ -17,24 +23,32 @@ type Shipment = {
     company?: { id: number; name: string; email: string } | null;
 };
 
+type ActiveTripShipment = Shipment & {
+    status: 'ASSIGNED' | 'IN_TRANSIT' | 'DELIVERED';
+};
+
 export default function Driver() {
+    // Router is used to redirect after ending the current session.
     const router = useRouter();
+
+    // State tracks shipments, loading feedback, and the selected modal shipment.
     const [shipments, setShipments] = useState<Shipment[]>([]);
     const [loading, setLoading] = useState(true);
-    const [selectedShipment, setSelectedShipment] = useState<Shipment | null>(null);
+    const [selectedShipment, setSelectedShipment] = useState<ActiveTripShipment | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     async function handleLogout() {
         try {
             await fetch('/api/auth/logout', { method: 'POST' });
         } catch (e) {
-            console.error('Error cerrando sesión', e);
+            console.error('Error closing session', e);
         } finally {
             localStorage.clear();
             router.push('/login');
         }
     }
 
+    // Loads the shipments assigned to the authenticated driver.
     async function fetchShipments() {
         try {
             setLoading(true);
@@ -52,16 +66,21 @@ export default function Driver() {
         }
     }
 
+    // Fetch driver data after the dashboard mounts.
     useEffect(() => {
         fetchShipments();
     }, []);
 
+    // Derived collections separate the active trip from delivered history.
     const activeShipment = shipments.find(s => s.status === 'ASSIGNED' || s.status === 'IN_TRANSIT') ?? null;
     const completedShipments = shipments.filter(s => s.status === 'DELIVERED');
 
+    // Opens the status update modal for the selected shipment.
     function handleOpenTrip(shipment: Shipment) {
-        setSelectedShipment(shipment);
-        setIsModalOpen(true);
+        if (shipment.status === 'ASSIGNED' || shipment.status === 'IN_TRANSIT' || shipment.status === 'DELIVERED') {
+            setSelectedShipment(shipment as ActiveTripShipment);
+            setIsModalOpen(true);
+        }
     }
 
     return (
@@ -102,7 +121,7 @@ export default function Driver() {
                     </nav>
                     <div className='px-8 py-2 space-y-2'>
                         <button onClick={handleLogout} className="w-full bg-red-500 text-white py-3 rounded-xl font-bold uppercase tracking-[0.05em] text-[10px] hover:bg-red-600 transition-all">
-                            Cerrar Sesión
+                            Log Out
                         </button>
                     </div>
                 </aside>
@@ -308,7 +327,7 @@ export default function Driver() {
                     setSelectedShipment(null);
                     fetchShipments();
                 }}
-                shipment={selectedShipment as any}
+                shipment={selectedShipment}
             />
         </div>
     );

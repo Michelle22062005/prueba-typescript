@@ -4,7 +4,13 @@ import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
 import Link from 'next/link';
 
+/**
+ * LoginForm authenticates a user with email and password.
+ * It stores the returned session data for the current UI flow,
+ * then routes users to the dashboard that matches their role.
+ */
 export default function RegisterForm() {
+    // Controlled inputs keep the form values synchronized with React state.
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
@@ -25,20 +31,20 @@ export default function RegisterForm() {
                 throw new Error(data.message || "error");
             }
             await Swal.fire({
-                title: `Bienvenid@ ${email}!`,
-                text: 'Sesión iniciada correctamente.',
+                title: `Welcome ${email}!`,
+                text: 'Session started successfully.',
                 icon: 'success',
                 timer: 2000,
                 showConfirmButton: false,
             });
             localStorage.setItem("accessToken", data.accessToken)
-            localStorage.setItem("usuario-logueado", JSON.stringify({
+            localStorage.setItem("logged-in-user", JSON.stringify({
                 id: data.user.id,
                 email: data.user.email,
                 name: data.user.name,
                 role: data.user.role
             }));
-            //redirigir segun el rol
+            // Redirect the authenticated user according to their role.
             const role = data.user.role;
             if (role === "ADMIN") {
                 router.push('/masterAdmin');
@@ -49,28 +55,28 @@ export default function RegisterForm() {
             } else if (role === "CUSTOMER") {
                 router.push('/customer');
             }
-            //router.push('/dasboard');
+            // Keep the role-based redirects explicit so each portal is easy to trace.
 
         } catch (err: unknown) {
-            const errorMessage = err instanceof Error ? err.message : "Ocurrió un problema";
+            const errorMessage = err instanceof Error ? err.message : "Something went wrong";
             Swal.fire({
                 title: 'Error',
                 text: errorMessage,
                 icon: 'error',
-                confirmButtonText: 'Reintentar',
+                confirmButtonText: 'Try Again',
             });
         }
     }
 
     return (
         <form onSubmit={handleSubmit} className="flex flex-col gap-5 w-full text-start">
-            <h2 className="text-2xl font-black tracking-tighter text-[#fbbc00]">TRUX LOGISTICA</h2>
+            <h2 className="text-2xl font-black tracking-tighter text-[#fbbc00]">TRUX LOGISTICS</h2>
             <p className="text-on-surface-variant font-medium tracking-wide text-sm uppercase opacity-70">Enter credentials to initialize your session</p>
             <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-400 ml-1">Correo Electrónico</label>
+                <label className="text-sm font-medium text-gray-400 ml-1">Email Address</label>
                 <input
                     type="email"
-                    placeholder="ejemplo@correo.com"
+                    placeholder="example@email.com"
                     className="w-full bg-transparent border-b border-gray p-3 rounded-xl text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
@@ -78,7 +84,7 @@ export default function RegisterForm() {
             </div>
 
             <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-400 ml-1">Contraseña</label>
+                <label className="text-sm font-medium text-gray-400 ml-1">Password</label>
                 <input
                     type="password"
                     placeholder="••••••••"
@@ -88,15 +94,15 @@ export default function RegisterForm() {
                 />
             </div>
             <button className="w-full py-5 rounded-xl text-[#402d00] mt-5 font-bold uppercase tracking-widest text-sm bg-[linear-gradient(135deg,_#ffe2ab_0%,_#ffbf00_100%)] shadow-[0_0_20px_rgba(255,191,0,0.3)] transition-all duration-300 active:scale-[0.98] flex items-center justify-center gap-2" type="submit">
-                Iniciar Sesión
+                Sign In
                 <span className="material-symbols-outlined text-lg" style={{ fontVariationSettings: "'wght' 700" }}>arrow_forward</span>
             </button>
 
             <div className="text-center mt-2">
                 <p className="text-sm text-gray-500">
-                    ¿No tienes cuenta?{" "}
+                    Do not have an account?{" "}
                     <Link href="/register" className="text-[#fbbc00] hover:text-[#e3ab14] font-medium transition-colors">
-                        Regístrate aquí
+                        Register here
                     </Link>
                 </p>
             </div>

@@ -1,8 +1,14 @@
 'use client';
 import { useState } from 'react';
 
+/**
+ * ActiveTripModal lets drivers advance an assigned shipment through the trip flow.
+ * It reads the current shipment status, calculates the next valid driver action,
+ * calls the shipment PATCH endpoint, and closes itself after a successful update.
+ */
 type ShipmentStatus = 'ASSIGNED' | 'IN_TRANSIT' | 'DELIVERED';
 
+// Shipment contains only the fields this modal needs to display and update a trip.
 type Shipment = {
     id: number;
     cargoType: string;
@@ -22,8 +28,10 @@ type ActiveTripModalProps = {
     shipment: Shipment | null;
 };
 export default function ActiveTripModal({ isOpen, onClose, onSuccess, shipment }: ActiveTripModalProps) {
+    // Loading disables the primary action while the status update is in flight.
     const [loading, setLoading] = useState(false);
 
+    // Moves the shipment from ASSIGNED to IN_TRANSIT, or from IN_TRANSIT to DELIVERED.
     async function handleUpdateStatus() {
         if (!shipment) return;
         const newStatus = shipment.status === 'ASSIGNED' ? 'IN_TRANSIT' : 'DELIVERED';
@@ -49,7 +57,10 @@ export default function ActiveTripModal({ isOpen, onClose, onSuccess, shipment }
             setLoading(false);
         }
     }
+    // Do not render the modal until it is opened with a valid shipment.
     if (!isOpen || !shipment) return null;
+
+    // Derived labels keep the JSX focused on presentation.
     const isAssigned = shipment.status === 'ASSIGNED';
     const buttonLabel = isAssigned ? 'START TRIP' : 'COMPLETE DELIVERY';
     const nextStatus = isAssigned ? 'IN_TRANSIT' : 'DELIVERED';
@@ -59,7 +70,7 @@ export default function ActiveTripModal({ isOpen, onClose, onSuccess, shipment }
             {/* Overlay */}
             <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
 
-            {/* Modal — estilo mobile */}
+            {/* Mobile-styled modal */}
             <div className="relative z-10 w-full max-w-sm mx-4 rounded-3xl overflow-hidden shadow-2xl" style={{ backgroundColor: '#131313' }}>
 
                 {/* Header */}
@@ -204,5 +215,3 @@ export default function ActiveTripModal({ isOpen, onClose, onSuccess, shipment }
         </div>
     )
 }
-
-

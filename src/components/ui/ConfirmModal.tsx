@@ -1,5 +1,10 @@
-'use cliente'
+'use client'
 
+/**
+ * ConfirmModal provides a reusable confirmation dialog for destructive,
+ * warning, or success actions. The parent controls visibility, labels,
+ * loading state, and the callback executed when the user confirms.
+ */
 type ConfirmModalProps = {
     isOpen: boolean;
     onClose: () => void;
@@ -23,8 +28,10 @@ export default function ConfirmModal({
     variant = 'danger',
     loading = false,
 }: ConfirmModalProps) {
+    // Hidden modals return nothing so they do not affect the page layout.
     if (!isOpen) return null;
 
+    // Variant styles keep the dialog markup reusable across different actions.
     const variantStyles = {
         danger: {
             icon: 'block',
@@ -45,6 +52,8 @@ export default function ConfirmModal({
             button: 'bg-emerald-500 hover:bg-emerald-600',
         },
     };
+
+    // Select the style set that matches the current action variant.
     const styles = variantStyles[variant];
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -54,7 +63,7 @@ export default function ConfirmModal({
             {/* Modal */}
             <div className="relative z-10 bg-[#1b1b1b] border border-zinc-800 rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6">
 
-                {/* Icono y título */}
+                {/* Icon and title */}
                 <div className="flex items-center gap-4 mb-4">
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center ${styles.iconBg}`}>
                         <span className={`material-symbols-outlined ${styles.iconColor}`}>
@@ -64,10 +73,10 @@ export default function ConfirmModal({
                     <h2 className="text-on-surface font-bold text-sm uppercase tracking-widest">{title}</h2>
                 </div>
 
-                {/* Descripción */}
+                {/* Description */}
                 <p className="text-zinc-400 text-sm mb-6 leading-relaxed">{description}</p>
 
-                {/* Botones */}
+                {/* Buttons */}
                 <div className="flex justify-end gap-3">
                     <button
                         onClick={onClose}

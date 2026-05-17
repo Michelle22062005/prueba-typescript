@@ -1,3 +1,7 @@
+/**
+ * authLayout wraps login and registration pages.
+ * It keeps the form on the left and a branded logistics visual on desktop.
+ */
 export default function authLayout({
     children,
 }: Readonly<{
@@ -5,7 +9,7 @@ export default function authLayout({
 }>) {
     return (
         <div className="flex min-h-screen w-full">
-            {/* Panel izquierdo - Formulario */}
+            {/* Left panel - form content */}
             <section className="w-full lg:w-[40%] flex flex-col justify-center px-8 sm:px-16 lg:px-24 bg-[#121212] relative z-10">
                 {/* Branding */}
                 <div className="mb-10">
@@ -15,17 +19,18 @@ export default function authLayout({
                         </div>
                         <span className="text-white font-black text-xl tracking-tight">TRUX</span>
                     </div>
-                    <p className="text-xs text-neutral-500 uppercase tracking-[0.2em]">Logística Inteligente</p>
+                    <p className="text-xs text-neutral-500 uppercase tracking-[0.2em]">Smart Logistics</p>
                 </div>
 
+                {/* Child pages provide either the login or register form. */}
                 {children}
 
                 <p className="mt-12 text-xs text-neutral-600">
-                    &copy; 2026 TRUX Logística
+                    &copy; 2026 TRUX Logistics
                 </p>
             </section>
 
-            {/* Panel derecho - Visual decorativo */}
+            {/* Right panel - decorative logistics visual */}
             <section className="hidden lg:block lg:w-[60%] relative overflow-hidden bg-black">
 
                 <div className="absolute inset-0 z-0">
@@ -33,10 +38,10 @@ export default function authLayout({
                     <div className="absolute inset-0 bg-gradient-to-r from-surface via-transparent to-transparent"></div>
                     <div className="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent opacity-60"></div>
                 </div>
-                {/* <!-- Floating Telemetry Modules (Asymmetric Bento Style) --> */}
+                {/* Floating telemetry modules */}
                 <div className="absolute inset-0 flex items-center justify-center p-12 z-10">
                     <div className="grid grid-cols-6 grid-rows-6 gap-4 w-full h-full">
-                        {/* <!-- Main Telemetry Hero --> */}
+                        {/* Main telemetry hero */}
                         <div className="col-start-2 col-end-5 row-start-2 row-end-4 glass-panel bg-[#303030] rounded-xl p-8 border border-white/5 flex flex-col justify-between">
                             <div className="flex justify-between items-start">
                                 <span className="material-symbols-outlined text-[#fbbc00] text-4xl">dynamic_feed</span>
@@ -47,7 +52,7 @@ export default function authLayout({
                                 <div className="text-6xl font-black tracking-tighter text-white italic">84.2<span className="text-2xl not-italic ml-2 text-[#fbbc00]">Mph</span></div>
                             </div>
                         </div>
-                        {/* <!-- Secondary Metric --> */}
+                        {/* Secondary metric */}
                         <div className="col-start-5 col-end-7 row-start-3 row-end-5 glass-panel bg-[#303030] rounded-xl p-6 border border-white/5 self-end">
                             <div className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.1em] mb-4">Route Efficiency</div>
                             <div className="flex items-end gap-2">
@@ -58,17 +63,17 @@ export default function authLayout({
                                 <div className="ml-4 text-4xl font-black text-on-surface">98%</div>
                             </div>
                         </div>
-                        {/* <!-- Small Decorative Node --> */}
+                        {/* Small decorative node */}
                         <div className="col-start-2 col-end-3 row-start-4 row-end-5 glass-panel bg-[#303030] rounded-xl flex items-center justify-center border border-white/5">
                             <span className="material-symbols-outlined text-neutral-500" data-weight="fill">hub</span>
                         </div>
-                        {/* <!-- Visual Accent Line --> */}
+                        {/* Visual accent line */}
                         <div className="col-start-1 col-end-7 row-start-6 row-end-7 flex items-center px-12">
                             <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-primary-container/30 to-transparent"></div>
                         </div>
                     </div>
                 </div>
-                {/* <!-- Bottom Left Brand Tag --> */}
+                {/* Bottom-left brand tag */}
                 <div className="absolute bottom-12 left-12 z-20 flex items-center gap-4">
                     <div className="w-12 h-12 bg-[#fbbc00] flex items-center justify-center rounded-xl rotate-45">
                         <span className="material-symbols-outlined -rotate-45 text-[#402d00]">rocket_launch</span>

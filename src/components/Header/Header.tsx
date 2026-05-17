@@ -1,5 +1,10 @@
 import Link from "next/link";
 
+/**
+ * Header renders the shared top navigation used by dashboard pages.
+ * It keeps primary navigation links, notification/settings actions,
+ * and the profile avatar in one consistent responsive bar.
+ */
 export function Header() {
     return (
         <header className="bg-[#131313] flex justify-between items-center w-full px-4 lg:px-8 h-16 sticky top-0 z-50 gap-4">
@@ -8,7 +13,7 @@ export function Header() {
 
             </div>
             <div className="flex items-center gap-3 lg:gap-6 shrink-0">
-                {/* Nav links ocultos en mobile */}
+                {/* Navigation links are hidden on mobile to preserve horizontal space. */}
                 <nav className="hidden md:flex items-center gap-6 lg:gap-8 text-[12px] uppercase font-bold tracking-widest font-['Inter']">
                     <Link className="text-zinc-400 hover:text-amber-300 transition-colors" href="/masterAdmin">Dashboard</Link>
                     <Link className="text-zinc-400 hover:text-amber-300 transition-colors" href="/shipments">Shipments</Link>

@@ -2,21 +2,25 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { getAuthUserFromHeaders } from "@/lib/getAuthUser";
 
-
-// GET - Listar envíos según rol
+/**
+ * GET /api/shipments returns shipments scoped by the authenticated role.
+ * Admins see everything, drivers see assigned work, and customers/companies
+ * see only shipments where they are the sender.
+ */
 export async function GET(request: NextRequest) {
     try {
 
+        // Auth identity is injected by the proxy after token verification.
         const authUser = getAuthUserFromHeaders(request);
 
         if (!authUser) {
-            return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
         let shipments;
 
         if (authUser.role === "ADMIN") {
-            // Admin ve todos los envíos
+            // Admins can review and manage every shipment in the system.
             shipments = await prisma.shipment.findMany({
                 include: {
                     sender: {
@@ -29,7 +33,7 @@ export async function GET(request: NextRequest) {
                 orderBy: { createdAt: "desc" },
             });
         } else if (authUser.role === "DRIVER") {
-            // Driver solo ve sus envíos asignados
+            // Drivers only receive shipments assigned to their user id.
             shipments = await prisma.shipment.findMany({
                 where: { driverId: authUser.id },
                 include: {
@@ -40,7 +44,7 @@ export async function GET(request: NextRequest) {
                 orderBy: { createdAt: "desc" },
             });
         } else {
-            // CUSTOMER o COMPANY solo ven sus propios envíos (como remitentes)
+            // Customers and companies only see shipments they created as senders.
             shipments = await prisma.shipment.findMany({
                 where: { senderId: authUser.id },
                 include: {
@@ -57,38 +61,45 @@ export async function GET(request: NextRequest) {
     } catch (error) {
         console.error("GET Shipments Error:", error);
         return NextResponse.json(
-            { error: "Error al obtener los envíos" },
+            { error: "Error getting shipments" },
             { status: 500 }
         );
     }
 }
 
-// POST - Crear envío (solo Customer o Company)
+/**
+ * POST /api/shipments creates a shipment request.
+ * Only customer and company accounts can create requests; admin and driver
+ * accounts manage shipments through later workflow steps.
+ */
 export async function POST(request: NextRequest) {
     try {
+        // Create requests need a valid authenticated sender.
         const authUser = getAuthUserFromHeaders(request);
 
         if (!authUser) {
-            return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
         if (authUser.role !== "CUSTOMER" && authUser.role !== "COMPANY") {
             return NextResponse.json(
-                { error: "Solo los clientes o empresas pueden crear envíos" },
+                { error: "Only customers or companies can create shipments" },
                 { status: 403 }
             );
         }
 
+        // The request body contains the shipment form and proposed quote.
         const body = await request.json();
         const { cargoType, weight, dimensions, origin, destination, timeline, proposedPrice } = body;
 
         if (!cargoType || !weight || !origin || !destination || !timeline) {
             return NextResponse.json(
-                { error: "Todos los campos requeridos deben estar completos" },
+                { error: "All required fields must be completed" },
                 { status: 400 }
             );
         }
 
+        // The sender is always the authenticated user, not a client-provided id.
         const newShipment = await prisma.shipment.create({
             data: {
                 cargoType,
@@ -111,7 +122,7 @@ export async function POST(request: NextRequest) {
     } catch (error) {
         console.error("POST Shipment Error:", error);
         return NextResponse.json(
-            { error: "Error al crear el envío" },
+            { error: "Error creating shipment" },
             { status: 500 }
         );
     }
