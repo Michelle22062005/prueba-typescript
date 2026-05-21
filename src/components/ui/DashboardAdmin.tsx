@@ -189,9 +189,9 @@ export default function MasterAdmin() {
                             <button onClick={() => {
                                 setSelectedUser(null);
                                 setIsModalOpen(true);
-                            }} className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-4 lg:px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-widest shadow-[0_4px_15px_rgba(255,191,0,0.2)] hover:shadow-[0_4px_25px_rgba(255,191,0,0.3)] transition-all flex items-center gap-2">
+                            }} className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-4 lg:px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-widest shadow-[0_4px_15px_rgba(255,191,0,0.2)] hover:shadow-[0_4px_25px_rgba(255,191,0,0.3)] transition-all flex items-center gap-2 bg-amber-400 hover:bg-white text-black ">
                                 <span className="material-symbols-outlined text-[18px]">add</span>
-                                <span className="hidden sm:inline">Register Entity</span>
+                                <span className="hidden sm:inline  ">Register Entity</span>
                             </button>
                         </div>
                     </div>
